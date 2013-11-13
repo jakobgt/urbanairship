@@ -10,35 +10,49 @@ describe Urbanairship::PushObject do
         @push_object.should be_an_instance_of Urbanairship::PushObject
     end
 
-    context "device identifiers" do
-      it "set device identifiers for single platform" do
-        po = Urbanairship::PushObject.new({ :device_token => [ "token1"] })
-        po.tokens.should == {
-          :device_token => [ "token1" ]
-        }
+    context "audience" do
+      context "tag" do
+        it "sets a tag"
       end
 
-      it "set device identifiers for single platform (plural)" do
-        po = Urbanairship::PushObject.new({ :device_tokens => [ "token1"] })
-        po.tokens.should == {
-          :device_token => [ "token1" ]
-        }
+      context "alias" do
+        it "sets an alias"
       end
 
-      it "set device identifiers for multiple platforms" do
-        po = Urbanairship::PushObject.new({ :device_token => [ "token1"], :apid => [ "token2" ] })
-        po.tokens.should == {
-          :device_token => [ "token1" ],
-          :apid => [ "token2" ]
-        }
+      context "segment" do
+        it "sets a segment"
       end
 
-      it "set device identifiers for multiple platforms (plural)" do
-        po = Urbanairship::PushObject.new({ :device_tokens => [ "token1"], :apids => [ "token2" ] })
-        po.tokens.should == {
-          :device_token => [ "token1" ],
-          :apid => [ "token2" ]
-        }
+      context "device identifiers" do
+        it "set device identifiers for single platform" do
+          po = Urbanairship::PushObject.new({ :device_token => [ "token1"] })
+          po.tokens.should == {
+            :device_token => [ "token1" ]
+          }
+        end
+
+        it "set device identifiers for single platform (plural)" do
+          po = Urbanairship::PushObject.new({ :device_tokens => [ "token1"] })
+          po.tokens.should == {
+            :device_token => [ "token1" ]
+          }
+        end
+
+        it "set device identifiers for multiple platforms" do
+          po = Urbanairship::PushObject.new({ :device_token => [ "token1"], :apid => [ "token2" ] })
+          po.tokens.should == {
+            :device_token => [ "token1" ],
+            :apid => [ "token2" ]
+          }
+        end
+
+        it "set device identifiers for multiple platforms (plural)" do
+          po = Urbanairship::PushObject.new({ :device_tokens => [ "token1"], :apids => [ "token2" ] })
+          po.tokens.should == {
+            :device_token => [ "token1" ],
+            :apid => [ "token2" ]
+          }
+        end
       end
     end
 
@@ -112,153 +126,213 @@ describe Urbanairship::PushObject do
     end
   end
 
-  context "setting device identifiers for platforms" do
-    # the ios context is the primary testing context,
-    # the other contexts are for testing the individual identifiers
+  context "audience" do
+    context "tag" do
+      describe "#tag=" do
+        it "sets a tag"
+        it "sets multiple tags"
+      end
 
-    context "ios" do
-      describe "#device_tokens=" do
-        it "takes takes one device token" do
+      describe "#tags=" do
+        it "sets a tag"
+        it "sets multiple tags"
+      end
+
+      describe "#add_tag" do
+        it "adds an additional tag"
+        it "adds an initial tag"
+      end
+
+      describe "#add_tags" do
+        it "adds an additional tag"
+        it "adds an initial tag"
+      end
+
+      describe "#tags" do
+        it "retrieves the tags"
+      end
+
+      describe "#tag" do
+        it "retrieves the tags"
+      end
+    end
+
+    context "alias" do
+      it "sets an alias"
+    end
+
+    context "segment" do
+      it "sets a segment"
+    end
+
+    context "device identifiers" do
+      # the ios context is the primary testing context,
+      # the other contexts are for testing the individual identifiers
+
+      context "ios" do
+        describe "#device_tokens=" do
+          it "takes takes one device token" do
+            @push_object.device_tokens = "token1"
+            @push_object.tokens.should == {
+              :device_token => [ "token1" ]
+            }
+          end
+
+          it "takes takes multiple device token" do
+            @push_object.device_tokens = [ "token1", "token2" ]
+            @push_object.tokens.should == {
+              :device_token => [ "token1", "token2" ]
+            }
+          end
+
+          it "overwrites current device tokens" do
+            @push_object.device_tokens = [ "token1", "token2" ]
+            @push_object.device_tokens = "token3"
+            @push_object.tokens.should == {
+              :device_token => [ "token3" ]
+            }
+          end
+        end
+
+        describe "#device_tokens" do
+          it "retrieves the device tokens"
+        end
+
+        describe "#add_device_tokens" do
+          it "add an additional device tokens" do
+            @push_object.device_tokens = [ "token1", "token2" ]
+            @push_object.add_device_tokens("token3")
+            @push_object.tokens.should == {
+              :device_token => [ "token1", "token2", "token3" ]
+            }
+          end
+
+          it "add multiple additional device tokens" do
+            @push_object.device_tokens = [ "token1", "token2" ]
+            @push_object.add_device_tokens([ "token3", "token4" ])
+            @push_object.tokens.should == {
+              :device_token => [ "token1", "token2", "token3", "token4" ]
+            }
+          end
+
+          it "add single initial device tokens" do
+            @push_object.add_device_tokens("token1")
+            @push_object.tokens.should == {
+              :device_token => [ "token1" ]
+            }
+          end
+        end
+      end
+
+      context "android" do
+        describe "#apids=" do
+          it "takes takes one apid" do
+            @push_object.apids = "token1"
+            @push_object.tokens.should == {
+              :apid => [ "token1" ]
+            }
+          end
+        end
+
+        describe "#apids" do
+          it "retrieves the apids"
+        end
+
+        describe "#add_device_tokens" do
+          it "add an additional apid" do
+            @push_object.apids = [ "token1", "token2" ]
+            @push_object.add_apids("token3")
+            @push_object.tokens.should == {
+              :apid => [ "token1", "token2", "token3" ]
+            }
+          end
+        end
+      end
+
+      context "blackberry" do
+        describe "#device_pins=" do
+          it "takes takes one device pin" do
+            @push_object.device_pins = "token1"
+            @push_object.tokens.should == {
+              :device_pin => [ "token1" ]
+            }
+          end
+        end
+
+        describe "#device_pins" do
+          it "retrieves the device pins"
+        end
+
+        describe "#add_device_pins" do
+          it "add an additional device pin" do
+            @push_object.device_pins = [ "token1", "token2" ]
+            @push_object.add_device_pins("token3")
+            @push_object.tokens.should == {
+              :device_pin => [ "token1", "token2", "token3" ]
+            }
+          end
+        end
+      end
+
+      context "mpns" do
+        describe "#mpns=" do
+          it "takes takes one mpns" do
+            @push_object.mpns = "token1"
+            @push_object.tokens.should == {
+              :mpns => [ "token1" ]
+            }
+          end
+        end
+
+        describe "#mpns" do
+          it "retrieves the mpns tokens"
+        end
+
+        describe "#add_mpns" do
+          it "add an additional mpns" do
+            @push_object.mpns = [ "token1", "token2" ]
+            @push_object.add_mpns("token3")
+            @push_object.tokens.should == {
+              :mpns => [ "token1", "token2", "token3" ]
+            }
+          end
+        end
+      end
+
+      context "wns" do
+        describe "#wns=" do
+          it "takes takes one wns" do
+            @push_object.wns = "token1"
+            @push_object.tokens.should == {
+              :wns => [ "token1" ]
+            }
+          end
+        end
+
+        describe "#wns" do
+          it "retrieves the wns tokens"
+        end
+
+        describe "#add_wns" do
+          it "add an additional wns" do
+            @push_object.wns = [ "token1", "token2" ]
+            @push_object.add_wns("token3")
+            @push_object.tokens.should == {
+              :wns => [ "token1", "token2", "token3" ]
+            }
+          end
+        end
+      end
+
+      context "multiple platforms" do
+        it "sets device identifiers for multiple platforms" do
           @push_object.device_tokens = "token1"
+          @push_object.apids = [ "token2", "token3" ]
           @push_object.tokens.should == {
-            :device_token => [ "token1" ]
+            :device_token => [ "token1" ],
+            :apid => [ "token2", "token3" ]
           }
         end
-
-        it "takes takes multiple device token" do
-          @push_object.device_tokens = [ "token1", "token2" ]
-          @push_object.tokens.should == {
-            :device_token => [ "token1", "token2" ]
-          }
-        end
-
-        it "overwrites current device tokens" do
-          @push_object.device_tokens = [ "token1", "token2" ]
-          @push_object.device_tokens = "token3"
-          @push_object.tokens.should == {
-            :device_token => [ "token3" ]
-          }
-        end
-      end
-
-      describe "#add_device_tokens" do
-        it "add an additional device tokens" do
-          @push_object.device_tokens = [ "token1", "token2" ]
-          @push_object.add_device_tokens("token3")
-          @push_object.tokens.should == {
-            :device_token => [ "token1", "token2", "token3" ]
-          }
-        end
-
-        it "add multiple additional device tokens" do
-          @push_object.device_tokens = [ "token1", "token2" ]
-          @push_object.add_device_tokens([ "token3", "token4" ])
-          @push_object.tokens.should == {
-            :device_token => [ "token1", "token2", "token3", "token4" ]
-          }
-        end
-
-        it "add single initial device tokens" do
-          @push_object.add_device_tokens("token1")
-          @push_object.tokens.should == {
-            :device_token => [ "token1" ]
-          }
-        end
-      end
-    end
-
-    context "android" do
-      describe "#apids=" do
-        it "takes takes one apid" do
-          @push_object.apids = "token1"
-          @push_object.tokens.should == {
-            :apid => [ "token1" ]
-          }
-        end
-      end
-
-      describe "#add_device_tokens" do
-        it "add an additional apid" do
-          @push_object.apids = [ "token1", "token2" ]
-          @push_object.add_apids("token3")
-          @push_object.tokens.should == {
-            :apid => [ "token1", "token2", "token3" ]
-          }
-        end
-      end
-    end
-
-    context "blackberry" do
-      describe "#device_pins=" do
-        it "takes takes one device pin" do
-          @push_object.device_pins = "token1"
-          @push_object.tokens.should == {
-            :device_pin => [ "token1" ]
-          }
-        end
-      end
-
-      describe "#add_device_pins" do
-        it "add an additional device pin" do
-          @push_object.device_pins = [ "token1", "token2" ]
-          @push_object.add_device_pins("token3")
-          @push_object.tokens.should == {
-            :device_pin => [ "token1", "token2", "token3" ]
-          }
-        end
-      end
-    end
-
-    context "mpns" do
-      describe "#mpns=" do
-        it "takes takes one mpns" do
-          @push_object.mpns = "token1"
-          @push_object.tokens.should == {
-            :mpns => [ "token1" ]
-          }
-        end
-      end
-
-      describe "#add_mpns" do
-        it "add an additional mpns" do
-          @push_object.mpns = [ "token1", "token2" ]
-          @push_object.add_mpns("token3")
-          @push_object.tokens.should == {
-            :mpns => [ "token1", "token2", "token3" ]
-          }
-        end
-      end
-    end
-
-    context "wns" do
-      describe "#wns=" do
-        it "takes takes one wns" do
-          @push_object.wns = "token1"
-          @push_object.tokens.should == {
-            :wns => [ "token1" ]
-          }
-        end
-      end
-
-      describe "#add_wns" do
-        it "add an additional wns" do
-          @push_object.wns = [ "token1", "token2" ]
-          @push_object.add_wns("token3")
-          @push_object.tokens.should == {
-            :wns => [ "token1", "token2", "token3" ]
-          }
-        end
-      end
-    end
-
-    context "multiple platforms" do
-      it "sets device identifiers for multiple platforms" do
-        @push_object.device_tokens = "token1"
-        @push_object.apids = [ "token2", "token3" ]
-        @push_object.tokens.should == {
-          :device_token => [ "token1" ],
-          :apid => [ "token2", "token3" ]
-        }
       end
     end
   end
@@ -348,6 +422,8 @@ describe Urbanairship::PushObject do
             :something => "else"
           }
         end
+
+        it "retrieves extra"
       end
     end
   end

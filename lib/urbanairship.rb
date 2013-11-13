@@ -45,9 +45,13 @@ module Urbanairship
     end
 
     # updated
-    def push(options = {})
+    def push(push_object)
       body = parse_push_options(options).to_json
-      do_request(:post, "/api/push/", :body => body, :authenticate_with => :master_secret)
+      do_request(:post, "/api/push/", :body => push_object.to_json, :authenticate_with => :master_secret)
+    end
+
+    def validate(push_object)
+      do_request(:post, "/api/push/validate", :body => push_object.to_json, :authenticate_with => :master_secret)
     end
 
     # endpoint updated, use /api/push
