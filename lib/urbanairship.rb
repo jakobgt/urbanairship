@@ -3,6 +3,7 @@ require 'net/https'
 require 'time'
 
 require File.join(File.dirname(__FILE__), 'urbanairship/response')
+require File.join(File.dirname(__FILE__), 'urbanairship/push_object')
 
 module Urbanairship
   begin
@@ -15,6 +16,9 @@ module Urbanairship
 
   module ClassMethods
     attr_accessor :application_key, :application_secret, :master_secret, :logger, :request_timeout, :provider
+
+    REQUEST_FORMAT = 'json'
+    API_VERSION = '3'
 
     def register_device(device_token, options = {})
       body = parse_register_options(options).to_json
@@ -34,26 +38,31 @@ module Urbanairship
       end
     end
 
+    # endpoint deprecated, use /api/schedules
     def delete_scheduled_push(param)
       path = param.is_a?(Hash) ? "/api/push/scheduled/alias/#{param[:alias].to_s}" : "/api/push/scheduled/#{param.to_s}"
       do_request(:delete, path, :authenticate_with => :master_secret)
     end
 
+    # updated
     def push(options = {})
       body = parse_push_options(options).to_json
       do_request(:post, "/api/push/", :body => body, :authenticate_with => :master_secret)
     end
 
+    # endpoint updated, use /api/push
     def push_to_segment(options = {})
       body = parse_push_options(options).to_json
       do_request(:post, "/api/push/segments", :body => body, :authenticate_with => :master_secret)
     end
 
+    # endpoint deprecated, use /api/push
     def batch_push(notifications = [])
       body = notifications.map{|notification| parse_push_options(notification)}.to_json
       do_request(:post, "/api/push/batch/", :body => body, :authenticate_with => :master_secret)
     end
 
+    # endpoint deprecated, use /api/push
     def broadcast_push(options = {})
       body = parse_push_options(options).to_json
       do_request(:post, "/api/push/broadcast/", :body => body, :authenticate_with => :master_secret)
@@ -127,6 +136,7 @@ module Urbanairship
       request = klass.new(path)
       request.basic_auth @application_key, instance_variable_get("@#{options[:authenticate_with]}")
       request.add_field "Content-Type", options[:content_type] || "application/json"
+      request.add_field "Accept", "application/vnd.urbanairship+#{REQUEST_FORMAT}; version=#{API_VERSION};"
       request.body = options[:body] if options[:body]
 
       Timer.timeout(request_timeout) do
