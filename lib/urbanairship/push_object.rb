@@ -53,9 +53,7 @@ module Urbanairship
       alert_arg = attributes.delete(:alert)
       self.alert = alert_arg unless alert_arg.nil?
 
-      attributes.each_pair do |k, v|
-        add_override_or_extra(k, v)
-      end
+      add_override_and_extras(attributes)
     end
 
     # build the push object
@@ -92,6 +90,12 @@ module Urbanairship
 
     def add_extra(key, value)
       extras[key.to_sym] = value.to_s
+    end
+
+    def add_override_and_extras(values)
+      values.each_pair do |k, v|
+        add_override_or_extra(k, v)
+      end
     end
 
     def add_override_or_extra(key, value)
