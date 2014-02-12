@@ -11,16 +11,116 @@ describe Urbanairship::PushObject do
     end
 
     context "audience" do
-      context "tag" do
-        it "sets a tag"
-      end
+      context "audience identifiers" do
+        context "tags" do
+          context "#tag" do
+            it "sets a tag" do
+              po = Urbanairship::PushObject.new({ :tag => [ "tag1" ] })
+              po.audience_identifiers.should == {
+                :tag => [ "tag1" ]
+              }
+            end
 
-      context "alias" do
-        it "sets an alias"
-      end
+            it "sets multiple tags" do
+              po = Urbanairship::PushObject.new({ :tag => [ "tag1", "tag2" ] })
+              po.audience_identifiers.should == {
+                :tag => [ "tag1", "tag2" ]
+              }
+            end
+          end
 
-      context "segment" do
-        it "sets a segment"
+          context "#tags" do
+            it "sets a tag" do
+              po = Urbanairship::PushObject.new({ :tags => [ "tag1" ] })
+              po.audience_identifiers.should == {
+                :tag => [ "tag1" ]
+              }
+            end
+
+            it "sets multiple tags" do
+              po = Urbanairship::PushObject.new({ :tags => [ "tag1", "tag2" ] })
+              po.audience_identifiers.should == {
+                :tag => [ "tag1", "tag2" ]
+              }
+            end
+          end
+        end
+
+        context "alias" do
+          context "#alias" do
+            it "sets a alias" do
+              po = Urbanairship::PushObject.new({ :alias => [ "alias1" ] })
+              po.audience_identifiers.should == {
+                :alias => [ "alias1" ]
+              }
+            end
+
+            it "sets multiple aliases" do
+              po = Urbanairship::PushObject.new({ :alias => [ "alias1", "alias2" ] })
+              po.audience_identifiers.should == {
+                :alias => [ "alias1", "alias2" ]
+              }
+            end
+          end
+
+          context "#aliases" do
+            it "sets a alias" do
+              po = Urbanairship::PushObject.new({ :aliases => [ "alias1" ] })
+              po.audience_identifiers.should == {
+                :alias => [ "alias1" ]
+              }
+            end
+
+            it "sets multiple aliases" do
+              po = Urbanairship::PushObject.new({ :aliases => [ "alias1", "alias2" ] })
+              po.audience_identifiers.should == {
+                :alias => [ "alias1", "alias2" ]
+              }
+            end
+          end
+        end
+
+        context "segment" do
+          context "#segment" do
+            it "sets a segment" do
+              po = Urbanairship::PushObject.new({ :segment => [ "segment1" ] })
+              po.audience_identifiers.should == {
+                :segment => [ "segment1" ]
+              }
+            end
+
+            it "sets multiple segmentes" do
+              po = Urbanairship::PushObject.new({ :segment => [ "segment1", "segment2" ] })
+              po.audience_identifiers.should == {
+                :segment => [ "segment1", "segment2" ]
+              }
+            end
+          end
+
+          context "#segmentes" do
+            it "sets a segment" do
+              po = Urbanairship::PushObject.new({ :segments => [ "segment1" ] })
+              po.audience_identifiers.should == {
+                :segment => [ "segment1" ]
+              }
+            end
+
+            it "sets multiple segmentes" do
+              po = Urbanairship::PushObject.new({ :segments => [ "segment1", "segment2" ] })
+              po.audience_identifiers.should == {
+                :segment => [ "segment1", "segment2" ]
+              }
+            end
+          end
+        end
+
+        context "multiple audience identifiers" do
+          po = Urbanairship::PushObject.new({ :segments => [ "segment1", "segment2" ], :tag => [ "tag1" ] })
+          po.audience_identifiers.should == {
+                :segment => [ "segment1", "segment2" ],
+                :tag => [ "tag1" ]
+              }
+        end
       end
 
       context "device identifiers" do
@@ -53,6 +153,18 @@ describe Urbanairship::PushObject do
             :apid => [ "token2" ]
           }
         end
+      end
+
+      context "device and audience identifiers" do
+        po = Urbanairship::PushObject.new({ :device_tokens => [ "token1"], :apids => [ "token2" ], :segment => [ "segment1" ], :tags => [ "tag1", "tag2" ] })
+        po.tokens.should == {
+          :device_token => [ "token1" ],
+          :apid => [ "token2" ]
+        }
+        po.audience_identifiers.should == {
+          :segment => [ "segment1" ],
+          :tag => [ "tag1", "tag2" ]
+        }
       end
     end
 
@@ -129,40 +241,416 @@ describe Urbanairship::PushObject do
   context "audience" do
     context "tag" do
       describe "#tag=" do
-        it "sets a tag"
-        it "sets multiple tags"
+        it "sets a tag" do
+          @push_object.tag = "tag1"
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1" ]
+          }
+        end
+
+        it "sets multiple tags" do
+          @push_object.tag = [ "tag1", "tag2" ]
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1", "tag2" ]
+          }
+        end
+
+        it "overwrites existing tag" do
+          @push_object.tag = "tag1"
+          @push_object.tag = [ "tag3", "tag4" ]
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag3", "tag4" ]
+          }
+        end
       end
 
       describe "#tags=" do
-        it "sets a tag"
-        it "sets multiple tags"
+        it "sets a tag" do
+          @push_object.tags = "tag1"
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1" ]
+          }
+        end
+
+        it "sets multiple tags" do
+          @push_object.tags = [ "tag1", "tag2" ]
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1", "tag2" ]
+          }
+        end
+
+        it "overwrites existing tags" do
+          @push_object.tags = [ "tag1", "tag2" ]
+          @push_object.tags = [ "tag3", "tag4" ]
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag3", "tag4" ]
+          }
+        end
       end
 
       describe "#add_tag" do
-        it "adds an additional tag"
-        it "adds an initial tag"
+        it "adds an additional tag" do
+          @push_object.tags = [ "tag1", "tag2" ]
+          @push_object.add_tag("tag3")
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1", "tag2", "tag3" ]
+          }
+        end
+
+        it "adds additional tags" do
+          @push_object.tags = [ "tag1", "tag2" ]
+          @push_object.add_tag([ "tag3", "tag4" ])
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1", "tag2", "tag3", "tag4" ]
+          }
+        end
+
+        it "adds an initial tag" do
+          @push_object.add_tag("tag1")
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1" ]
+          }
+        end
+
+        it "adds initial tags" do
+          @push_object.add_tag([ "tag1", "tag2" ])
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1", "tag2" ]
+          }
+        end
       end
 
       describe "#add_tags" do
-        it "adds an additional tag"
-        it "adds an initial tag"
-      end
+        it "adds an additional tag" do
+          @push_object.tags = [ "tag1", "tag2" ]
+          @push_object.add_tags("tag3")
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1", "tag2", "tag3" ]
+          }
+        end
 
-      describe "#tags" do
-        it "retrieves the tags"
+        it "adds additional tags" do
+          @push_object.tags = [ "tag1", "tag2" ]
+          @push_object.add_tags([ "tag3", "tag4" ])
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1", "tag2", "tag3", "tag4" ]
+          }
+        end
+
+        it "adds an initial tag" do
+          @push_object.add_tags("tag1")
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1" ]
+          }
+        end
+
+        it "adds initial tags" do
+          @push_object.add_tags([ "tag1", "tag2" ])
+          @push_object.audience_identifiers.should == {
+            :tag => [ "tag1", "tag2" ]
+          }
+        end
       end
 
       describe "#tag" do
-        it "retrieves the tags"
+        it "retrieves the tag" do
+          @push_object.tag = "tag1"
+          @push_object.tag.should == [ "tag1" ]
+        end
+
+        it "retrieves the tags" do
+          @push_object.tags = [ "tag1", "tag2" ]
+          @push_object.tag.should == [ "tag1", "tag2" ]
+        end
+      end
+
+      describe "#tags" do
+        it "retrieves the tags" do
+          @push_object.tag = "tag1"
+          @push_object.tags.should == [ "tag1" ]
+        end
+
+        it "retrieves the tags" do
+          @push_object.tags = [ "tag1", "tag2" ]
+          @push_object.tags.should == [ "tag1", "tag2" ]
+        end
       end
     end
 
     context "alias" do
-      it "sets an alias"
+      describe "#alias=" do
+        it "sets an alias" do
+          @push_object.alias = "alias1"
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1" ]
+          }
+        end
+
+        it "sets multiple aliases" do
+          @push_object.alias = [ "alias1", "alias2" ]
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1", "alias2" ]
+          }
+        end
+
+        it "overwrites existing alias" do
+          @push_object.alias = "alias1"
+          @push_object.alias = [ "alias3", "alias4" ]
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias3", "alias4" ]
+          }
+        end
+      end
+
+      describe "#aliases=" do
+        it "sets an alias" do
+          @push_object.aliases = "alias1"
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1" ]
+          }
+        end
+
+        it "sets multiple aliases" do
+          @push_object.aliases = [ "alias1", "alias2" ]
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1", "alias2" ]
+          }
+        end
+
+        it "overwrites existing aliases" do
+          @push_object.aliases = [ "alias1", "alias2" ]
+          @push_object.aliases = [ "alias3", "alias4" ]
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias3", "alias4" ]
+          }
+        end
+      end
+
+      describe "#add_alias" do
+        it "adds an additional alias" do
+          @push_object.aliases = [ "alias1", "alias2" ]
+          @push_object.add_alias("alias3")
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1", "alias2", "alias3" ]
+          }
+        end
+
+        it "adds additional aliases" do
+          @push_object.aliases = [ "alias1", "alias2" ]
+          @push_object.add_alias([ "alias3", "alias4" ])
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1", "alias2", "alias3", "alias4" ]
+          }
+        end
+
+        it "adds an initial alias" do
+          @push_object.add_alias("alias1")
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1" ]
+          }
+        end
+
+        it "adds initial aliases" do
+          @push_object.add_alias([ "alias1", "alias2" ])
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1", "alias2" ]
+          }
+        end
+      end
+
+      describe "#add_aliases" do
+        it "adds an additional alias" do
+          @push_object.aliases = [ "alias1", "alias2" ]
+          @push_object.add_aliases("alias3")
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1", "alias2", "alias3" ]
+          }
+        end
+
+        it "adds additional aliases" do
+          @push_object.aliases = [ "alias1", "alias2" ]
+          @push_object.add_aliases([ "alias3", "alias4" ])
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1", "alias2", "alias3", "alias4" ]
+          }
+        end
+
+        it "adds an initial alias" do
+          @push_object.add_aliases("alias1")
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1" ]
+          }
+        end
+
+        it "adds initial aliases" do
+          @push_object.add_aliases([ "alias1", "alias2" ])
+          @push_object.audience_identifiers.should == {
+            :alias => [ "alias1", "alias2" ]
+          }
+        end
+      end
+
+      describe "#alias" do
+        it "retrieves the alias" do
+          @push_object.alias = "alias1"
+          @push_object.alias.should == [ "alias1" ]
+        end
+
+        it "retrieves the aliases" do
+          @push_object.alias = [ "alias1", "alias2" ]
+          @push_object.alias.should == [ "alias1", "alias2" ]
+        end
+      end
+
+      describe "#aliases" do
+        it "retrieves the aliases" do
+          @push_object.alias = "alias1"
+          @push_object.aliases.should == [ "alias1" ]
+        end
+
+        it "retrieves the aliases" do
+          @push_object.aliases = [ "alias1", "alias2" ]
+          @push_object.aliases.should == [ "alias1", "alias2" ]
+        end
+      end
     end
 
     context "segment" do
-      it "sets a segment"
+      describe "#segment=" do
+        it "sets an segment" do
+          @push_object.segment = "segment1"
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1" ]
+          }
+        end
+
+        it "sets multiple segments" do
+          @push_object.segment = [ "segment1", "segment2" ]
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1", "segment2" ]
+          }
+        end
+
+        it "overwrites existing segment" do
+          @push_object.segment = "segment1"
+          @push_object.segment = [ "segment3", "segment4" ]
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment3", "segment4" ]
+          }
+        end
+      end
+
+      describe "#segments=" do
+        it "sets an segment" do
+          @push_object.segments = "segment1"
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1" ]
+          }
+        end
+
+        it "sets multiple segments" do
+          @push_object.segments = [ "segment1", "segment2" ]
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1", "segment2" ]
+          }
+        end
+
+        it "overwrites existing segments" do
+          @push_object.segments = [ "segment1", "segment2" ]
+          @push_object.segments = [ "segment3", "segment4" ]
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment3", "segment4" ]
+          }
+        end
+      end
+
+      describe "#add_segment" do
+        it "adds an additional segment" do
+          @push_object.segments = [ "segment1", "segment2" ]
+          @push_object.add_segment("segment3")
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1", "segment2", "segment3" ]
+          }
+        end
+
+        it "adds additional segments" do
+          @push_object.segments = [ "segment1", "segment2" ]
+          @push_object.add_segment([ "segment3", "segment4" ])
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1", "segment2", "segment3", "segment4" ]
+          }
+        end
+
+        it "adds an initial segment" do
+          @push_object.add_segment("segment1")
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1" ]
+          }
+        end
+
+        it "adds initial segments" do
+          @push_object.add_segment([ "segment1", "segment2" ])
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1", "segment2" ]
+          }
+        end
+      end
+
+      describe "#add_segments" do
+        it "adds an additional segment" do
+          @push_object.segments = [ "segment1", "segment2" ]
+          @push_object.add_segments("segment3")
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1", "segment2", "segment3" ]
+          }
+        end
+
+        it "adds additional segments" do
+          @push_object.segments = [ "segment1", "segment2" ]
+          @push_object.add_segments([ "segment3", "segment4" ])
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1", "segment2", "segment3", "segment4" ]
+          }
+        end
+
+        it "adds an initial segment" do
+          @push_object.add_segments("segment1")
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1" ]
+          }
+        end
+
+        it "adds initial segments" do
+          @push_object.add_segments([ "segment1", "segment2" ])
+          @push_object.audience_identifiers.should == {
+            :segment => [ "segment1", "segment2" ]
+          }
+        end
+      end
+
+      describe "#segment" do
+        it "retrieves the segment" do
+          @push_object.segment = "segment1"
+          @push_object.segment.should == [ "segment1" ]
+        end
+
+        it "retrieves the segments" do
+          @push_object.segment = [ "segment1", "segment2" ]
+          @push_object.segment.should == [ "segment1", "segment2" ]
+        end
+      end
+
+      describe "#segments" do
+        it "retrieves the segments" do
+          @push_object.segment = "segment1"
+          @push_object.segments.should == [ "segment1" ]
+        end
+
+        it "retrieves the segments" do
+          @push_object.segments = [ "segment1", "segment2" ]
+          @push_object.segments.should == [ "segment1", "segment2" ]
+        end
+      end
     end
 
     context "device identifiers" do
@@ -195,7 +683,15 @@ describe Urbanairship::PushObject do
         end
 
         describe "#device_tokens" do
-          it "retrieves the device tokens"
+          it "retrieves device tokens" do
+            @push_object.device_token = "token1"
+            @push_object.device_token.should == [ "token1" ]
+          end
+
+          it "retrieves device tokens" do
+            @push_object.device_tokens = [ "token1", "token2" ]
+            @push_object.device_tokens.should == [ "token1", "token2" ]
+          end
         end
 
         describe "#add_device_tokens" do
@@ -235,7 +731,15 @@ describe Urbanairship::PushObject do
         end
 
         describe "#apids" do
-          it "retrieves the apids"
+          it "retrieves apids" do
+            @push_object.apid = "token1"
+            @push_object.apid.should == [ "token1" ]
+          end
+
+          it "retrieves apids" do
+            @push_object.apids = [ "token1", "token2" ]
+            @push_object.apids.should == [ "token1", "token2" ]
+          end
         end
 
         describe "#add_device_tokens" do
@@ -260,7 +764,15 @@ describe Urbanairship::PushObject do
         end
 
         describe "#device_pins" do
-          it "retrieves the device pins"
+          it "retrieves device pins" do
+            @push_object.device_pin = "token1"
+            @push_object.device_pin.should == [ "token1" ]
+          end
+
+          it "retrieves device pins" do
+            @push_object.device_pins = [ "token1", "token2" ]
+            @push_object.device_pins.should == [ "token1", "token2" ]
+          end
         end
 
         describe "#add_device_pins" do
@@ -285,7 +797,15 @@ describe Urbanairship::PushObject do
         end
 
         describe "#mpns" do
-          it "retrieves the mpns tokens"
+          it "retrieves the mpns token" do
+            @push_object.mpns = "token1"
+            @push_object.mpns.should == [ "token1" ]
+          end
+
+          it "retrieves the mpns tokens" do
+            @push_object.mpnss = [ "token1", "token2" ]
+            @push_object.mpnss.should == [ "token1", "token2" ]
+          end
         end
 
         describe "#add_mpns" do
@@ -310,7 +830,15 @@ describe Urbanairship::PushObject do
         end
 
         describe "#wns" do
-          it "retrieves the wns tokens"
+          it "retrieves the wns token" do
+            @push_object.wns = "token1"
+            @push_object.wns.should == [ "token1" ]
+          end
+
+          it "retrieves the wns tokens" do
+            @push_object.wnss = [ "token1", "token2" ]
+            @push_object.wnss.should == [ "token1", "token2" ]
+          end
         end
 
         describe "#add_wns" do
@@ -423,7 +951,10 @@ describe Urbanairship::PushObject do
           }
         end
 
-        it "retrieves extra"
+        it "retrieves extra" do
+          @push_object.something = "else"
+          @push_object.something.should == "else"
+        end
       end
     end
   end

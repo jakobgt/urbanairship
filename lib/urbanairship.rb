@@ -46,7 +46,7 @@ module Urbanairship
 
     # updated
     def push(push_object)
-      body = parse_push_options(options).to_json
+      push_object = Urbanairship::PushObject.new(push_object) if push_object.is_a?(Hash)
       do_request(:post, "/api/push/", :body => push_object.to_json, :authenticate_with => :master_secret)
     end
 
