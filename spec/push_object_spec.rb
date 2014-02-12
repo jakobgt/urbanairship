@@ -966,8 +966,7 @@ describe Urbanairship::PushObject do
         :audience => nil,
         :notification => {
           :alert => "Alert subject"
-        },
-        :device_types =>[]
+        }
       }
     end
 
@@ -1013,6 +1012,127 @@ describe Urbanairship::PushObject do
           },
           :device_types =>[ :android, :ios ]
         }
+      end
+    end
+
+    context "audience identifiers" do
+      context "tags" do
+        it "set tag" do
+          @push_object.tag = "tag1"
+          @push_object.build.should == {
+            :audience => {
+              :tag => [ "tag1" ]
+            },
+            :notification => {
+              :alert => nil
+            }
+          }
+        end
+
+        it "set tags" do
+          @push_object.tags = [ "tag1", "tag2" ]
+          @push_object.build.should == {
+            :audience => {
+              :tag => [ "tag1", "tag2" ]
+            },
+            :notification => {
+              :alert => nil
+            }
+          }
+        end
+      end
+
+      context "aliases" do
+        it "set alias" do
+          @push_object.alias = "alias1"
+          @push_object.build.should == {
+            :audience => {
+              :alias => [ "alias1" ]
+            },
+            :notification => {
+              :alert => nil
+            }
+          }
+        end
+
+        it "set aliases" do
+          @push_object.aliases = [ "alias1", "alias2" ]
+          @push_object.build.should == {
+            :audience => {
+              :alias => [ "alias1", "alias2" ]
+            },
+            :notification => {
+              :alert => nil
+            }
+          }
+        end
+      end
+
+      context "segments" do
+        it "set segment" do
+          @push_object.segment = "segment1"
+          @push_object.build.should == {
+            :audience => {
+              :segment => [ "segment1" ]
+            },
+            :notification => {
+              :alert => nil
+            }
+          }
+        end
+
+        it "set segments" do
+          @push_object.segments = [ "segment1", "segment2" ]
+          @push_object.build.should == {
+            :audience => {
+              :segment => [ "segment1", "segment2" ]
+            },
+            :notification => {
+              :alert => nil
+            }
+          }
+        end
+      end
+
+      context "multiple audience identifiers" do
+        it "set segment and tag" do
+          @push_object.segment = "segment1"
+          @push_object.tag = "tag1"
+          @push_object.build.should == {
+            :audience => {
+              :OR => [
+                { :segment => [ "segment1" ] },
+                { :tag => [ "tag1" ] }
+              ]
+            },
+            :notification => {
+              :alert => nil
+            }
+          }
+        end
+      end
+
+      context "audience identifiers and device identifiers" do
+        it "set segment and tag" do
+          @push_object.segment = "segment1"
+          @push_object.tag = "tag1"
+          @push_object.apid = "apid1"
+          @push_object.device_token = "device_token1"
+          @push_object.build.should == {
+            :audience => {
+              :OR => [
+                { :apid => [ "apid1" ] },
+                { :device_token => [ "device_token1" ] },
+                { :segment => [ "segment1" ] },
+                { :tag => [ "tag1" ] }
+              ]
+            },
+            :notification => {
+              :alert => nil
+            },
+            :device_types =>[ :android, :ios ]
+          }
+        end
       end
     end
 

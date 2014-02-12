@@ -54,9 +54,15 @@ module Urbanairship
     def build
       json = {
         :audience     => audience.nil? ? generated_audience : audience,
-        :notification => notification.nil? ? notification_with_overrides : notification,
-        :device_types => device_types.nil? ? token_device_types : device_types
+        :notification => notification.nil? ? notification_with_overrides : notification
       }
+      if !device_types.nil?
+        json[:device_types] = device_types
+      else
+        if !token_device_types.empty?
+          json[:device_types] = token_device_types
+        end
+      end
 
       unless options.nil?
         json[:options] = options
@@ -218,16 +224,22 @@ module Urbanairship
     end
 
     def generated_audience
-      if tokens.size == 1
-        tokens
-      elsif tokens.size > 1
-        or_value = []
+      or_value = []
 
-        iterate_platforms do |platform|
-          identifier = PLATFORMS[platform][:identifier]
-          or_value.push({ identifier => tokens[identifier] }) unless tokens[identifier].nil?
-        end
+      iterate_platforms do |platform|
+        identifier = PLATFORMS[platform][:identifier]
+        or_value.push({ identifier => tokens[identifier] }) unless tokens[identifier].nil?
+      end
 
+      iterate_audience_identifiers do |identifier|
+        or_value.push({ identifier => audience_identifiers[identifier] }) unless audience_identifiers[identifier].nil?
+      end
+
+      if or_value.length == 0
+        nil
+      elsif or_value.length == 1
+        or_value[0]
+      else
         {
           :OR => or_value
         }
@@ -272,7 +284,7 @@ module Urbanairship
     end
 
     def self.iterate_audience_identifiers(&block)
-      AUDIENCE_IDENTIFIERS.keys.sort.each do |identifier|
+      AUDIENCE_IDENTIFIERS.sort.each do |identifier|
         yield identifier
       end
     end
@@ -303,18 +315,14 @@ module Urbanairship
     # po.add_tags(...)
     # po.add_segment(...)
     def self.define_audience_methods(name, identifier)
-      # puts "define_audience_methods: #{name} => #{identifier}"
-      # puts "define_audience_methods: defining: add_#{name}"
       define_method("add_#{name}") do |identifiers|
         add_audience_identifiers(identifiers, identifier)
       end
 
-      # puts "define_audience_methods: defining: #{name}"
       define_method(name) do
         audience_identifiers[identifier]
       end
 
-      # puts "define_audience_methods: defining: #{name}="
       define_method("#{name}=") do |identifiers|
         add_audience_identifiers(identifiers, identifier, true)
       end
